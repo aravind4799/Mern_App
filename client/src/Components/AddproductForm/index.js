@@ -117,7 +117,7 @@ const AddproductForm = ({ editRecordData, handleAdditemToggle, updateProductData
 
                         if (values.action === 'Add') {
                             axios({
-                                url: "http://localhost:5000/items/",
+                                url: "/items/",
                                 method: "POST",
                                 data: values
                             })
@@ -135,7 +135,7 @@ const AddproductForm = ({ editRecordData, handleAdditemToggle, updateProductData
                         }
                         else {
                             axios({
-                                url: "http://localhost:5000/items/" + values.editRecord_id,
+                                url: "/items/" + values.editRecord_id,
                                 method: "PUT",
                                 data: values
                             })
