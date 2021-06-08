@@ -126,6 +126,7 @@ export const AddCustomer = () => {
     }
     const handleAddCustomer = () => {
         setAddCustomer_toggle((prev_value)=>(!prev_value))
+        setrecordEdit(null)
     }
     const handleEdit = (item) => {
         setrecordEdit(item)
@@ -326,6 +327,7 @@ export const AddInvoice = () => {
     }
     const handleAddInvoice = () => {
         setAddInvoice_toggle((prev_value)=>(!prev_value))
+        setrecordEdit(null)
     }
     const handleEdit = (item) => {
         setrecordEdit(item)
@@ -376,7 +378,7 @@ export const AddInvoice = () => {
                                     <TableCell>{item.order_number}</TableCell>
                                     <TableCell>{item.customer_details.name}</TableCell>
                                     <TableCell>{item.invoice_due_date}</TableCell>
-                                    <TableCell>{item.total}</TableCell>
+                                    <TableCell>{item.invoice_amount}</TableCell>
                                     <TableCell>
 
                                         <Controls.ActionButton

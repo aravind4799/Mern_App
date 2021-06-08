@@ -15,29 +15,36 @@ import Notification from '../Notification';
 import InputAdornment from '@material-ui/core/InputAdornment';
  import axios from "axios";
 
- import { useFormikContext } from 'formik';
+//  import { useFormikContext } from 'formik';
 
 
 
 
 
 
-const itemList = [
-
-]
 
 
 
 
-const AddInvoiceTable = ({hi,setFieldValue}) => {
 
-  const { submitForm } = useFormikContext();
-  const handleSubmit = () => {
-    setFieldValue('items',data)
-    setFieldValue('total',table_data.finalTotal)
+const AddInvoiceTable = ({editRecordData,setFieldValue}) => {
+
+  // const { submitForm } = useFormikContext();
+  // const handleSubmit = () => {
+    let itemList=[]
+    if(editRecordData){
+       itemList = [
+        ...editRecordData.items
+      ]
+    }
+    else{
+      itemList =[]
+    }
    
-    submitForm();
-  }
+   
+   
+  //   submitForm();
+  // }
       // {console.log(hi)}
 
   const [item_data, setItemData] = useState([])
@@ -52,14 +59,16 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
   
   
   }
+  const [data, setData] = useState(itemList)
 
   const[table_data,setTableData]=useState({
     itemName:'',
     itemQuantity:0,
-    discountType:'number',
-    discountAmount:0,
-    shippingCharges:0,
-    subTotal:0,
+    discountType: editRecordData ? editRecordData.discount_type :'number',
+    discountAmount:editRecordData ? editRecordData.discount_amount :0,
+    shippingCharges:editRecordData ? editRecordData.shipping_charges :0,
+    subTotal:editRecordData ? editRecordData.sub_total :0,
+    finalTotal:editRecordData ? editRecordData.invoice_amount :0,
     itemData:{}
   })
 
@@ -69,11 +78,24 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
 
   useEffect(() => {
     calculateTotal()
+    // setFieldValue('invoice_amount',table_data.finalTotal)
+    setFieldValue('sub_total',table_data.subTotal)
+    setFieldValue('discount_amount',table_data.discountAmount)
+    setFieldValue('discount_type',table_data.discountType)
+    setFieldValue('shipping_charges',table_data.shippingCharges)
   },[table_data.shippingCharges,table_data.discountAmount,table_data.discountType,table_data.subTotal])
 
+  useEffect(() => {
+    setFieldValue('invoice_amount',table_data.finalTotal)
+  },[table_data.finalTotal])
+
+  useEffect(()=>{
+    setFieldValue('items',data)
+  },[data])
 
 
-  const [data, setData] = useState(itemList);
+
+ 
   // const [ total,setTotal]=useState(0);
 
  
@@ -116,7 +138,7 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
         
         options={item_data}
         getOptionLabel={(option) => option.name ? option.name : ""}
-        getOptionSelected={(option, value) => option.name === value.name }
+        getOptionSelected={(option, value) => option === value }
         value={table_data.itemData}
         onInputChange={(event, inputValue)=>{
           console.log(inputValue)
@@ -153,7 +175,7 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
             console.log(table_data)
           }}
           type="number"
-          min="0"
+          min="1"
         />
       )
     },
@@ -203,19 +225,25 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
   ]
 
   function calculateTotal() {
+    console.log('called')
     let total = 0;
 
     if(table_data.subTotal!==0 || table_data.shippingCharges!==0 || table_data.discountAmount!==0){
+      
       if(table_data.discountType==='percentage')
       {
         total = table_data.subTotal-((table_data.subTotal*table_data.discountAmount)/100)+table_data.shippingCharges;
       }else{
         total = table_data.subTotal-table_data.discountAmount+table_data.shippingCharges;
     }
+    console.log(total)
     setTableData((prev_value)=>({
       ...prev_value,
-      finalTotal:total,
+      finalTotal:total
     }))
+    
+    
+  console.log(table_data)
        
     }
     
@@ -298,7 +326,7 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
       <div className='invoiceform'>
 
         <Grid container>
-          <Grid item><p>SubTotal: </p></Grid>
+          <Grid item><p>SubTotal:<BiIcons.BiRupee /> </p></Grid>
           <Grid item><p>{table_data.subTotal}</p></Grid>
         </Grid>
 
@@ -309,15 +337,19 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
               variant="standard"
        
               value={table_data.discountAmount}
-              type='number'
+              type='tel'
               label='Discount'
               InputLabelProps={{ style: { fontSize: 20 } }}
 
               onChange={(e) => {
-                setTableData((prev_value)=>({
-                  ...prev_value,
-                  discountAmount:e.target.value
-                }))
+                var Discount = isNaN(parseInt(e.target.value))? 0 : parseInt(e.target.value)
+                
+                  setTableData((prev_value)=> ({
+                    ...prev_value,
+                    discountAmount:Discount
+                  }))
+                
+               
              }}
              
             />
@@ -343,28 +375,18 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
           
           <TextField
           variant='standard'
-          type='number'
+          type='tel'
           label='Shipping Charges'
           value={table_data.shippingCharges}
           onChange={(e) => { 
-            if(e.target.value)
-            {
+               var ShippingCharges = isNaN(parseInt(e.target.value))? 0 : parseInt(e.target.value)
               // setShippingCharges(parseInt(e.target.value))
-              setTableData((prev_value)=> ({
-                ...prev_value,
-                shippingCharges:parseInt(e.target.value)
-              }))
-            }
-            else{
-              // setShippingCharges(0);
-              setTableData((prev_value)=> ({
-                ...prev_value,
-                shippingCharges:0
-              }))
-
-            }
-          }}
-          
+              
+                setTableData((prev_value)=> ({
+                  ...prev_value,
+                  shippingCharges:ShippingCharges
+                }))
+             }}
           InputLabelProps={{ style: { fontSize: 20 } }}
           InputProps={{
             startAdornment: <InputAdornment position="start"><BiIcons.BiRupee /></InputAdornment>,
@@ -376,36 +398,16 @@ const AddInvoiceTable = ({hi,setFieldValue}) => {
 
 
         <Grid container>
-          <Grid item><p>Total:</p></Grid>
-         
-          <Grid item><p> {table_data.finalTotal}</p></Grid>
+          <Grid item><p>Total:<BiIcons.BiRupee /></p></Grid>
+          <Grid item><p>{table_data.finalTotal}</p></Grid>
         </Grid>
 
-        <Grid container>
-
-        <Button
-                                    className={['field', 'button'].join('')}
-                                    variant="contained"
-                                    color="primary"
-                                    // style={{width:'40%'}}
-                                    onClick={(e) => {handleSubmit()}}
-                                      
-                                    // disabled={isSubmitting}
-                                    inputProps={{ style: { fontSize: 22 } }}
-                                    InputLabelProps={{ style: { fontSize: 22 } }}
-                                >
-                                    Add Invoice
-                            </Button> 
-                            </Grid>
+     
 
 
 
       </div>
-      {/* <Notification
-                notify={notify}
-                setNotify={setNotify}
-            >
-            </Notification> */}
+   
 
     </div>
   );

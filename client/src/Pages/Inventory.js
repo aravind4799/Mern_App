@@ -127,6 +127,7 @@ export const AddItem = () => {
     }
     const handleAddItem = () => {
         setAddItem_toggle((prev_value)=>(!prev_value))
+        setrecordEdit(null)
     }
     const handleEdit = (item) => {
         setrecordEdit(item)

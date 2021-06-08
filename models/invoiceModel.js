@@ -5,7 +5,23 @@ const customer_detailsSchema = new mongoose.Schema({
 })
 const invoiceSchema = new mongoose.Schema({
     "customer_details": {
-      "type":customer_detailsSchema
+      "name":{"type":"String"},
+      "id":{"type":"String"},
+      "billing_address":{
+        "ba_country":{"type":"String"},
+        "ba_state":{"type":"String"},
+        "ba_address":{"type":"String"},
+        "ba_city":{"type":"String"},
+        "ba_zipcode":{"type":"Number"}
+      },
+      "shipping_address":{
+        "sp_country":{"type":"String"},
+        "sp_state":{"type":"String"},
+        "sp_address":{"type":"String"},
+        "sp_city":{"type":"String"},
+        "sp_zipcode":{"type":"Number"}
+      },
+      "place_of_supply":{"type":"String"}
     },
     "invoice_number": {
       "type": "String"
@@ -30,10 +46,19 @@ const invoiceSchema = new mongoose.Schema({
         "Mixed"
       ]
     },
-    "total":{
+    "sub_total":{
+      "type": "Number"
+    },
+    "shipping_charges":{
       "type":"Number"
-    }
-    
+    },
+    "discount_amount":{
+      "type":'Number'
+    },
+    "discount_type":{
+      "type":'String'
+    },
+    "updated_place_of_supply":{"type":"String"}
   });
 
 let invoiceModel = mongoose.model("invoice", invoiceSchema);
