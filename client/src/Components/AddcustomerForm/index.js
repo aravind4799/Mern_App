@@ -160,7 +160,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
 
                         if (values.action === 'Add') {
                             axios({
-                                url: "http://localhost:5000/customers/",
+                                url: "/customers/",
                                 method: "POST",
                                 data: values
                             })
@@ -178,7 +178,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                         }
                         else {
                             axios({
-                                url: "http://localhost:5000/customers/" + values.editRecord_id,
+                                url: "/customers/" + values.editRecord_id,
                                 method: "PUT",
                                 data: values
                             })
