@@ -79,7 +79,7 @@ export const fetchcustomerdetails = async () => {
 export const fetchitem = async (id) => {
     try{
         console.log(id)
-        let fetchurl =`http://localhost:5000/items/${id}`
+        let fetchurl =`/items/${id}`
         const data=await axios.get(fetchurl)
         console.log(data.data)
         return data.data
@@ -93,7 +93,7 @@ export const fetchitem = async (id) => {
 export const fetchcustomer = async (id) => {
     try{
         console.log(id)
-        let fetchurl =`http://localhost:5000/customers/${id}`
+        let fetchurl =`/customers/${id}`
         const data=await axios.get(fetchurl)
         console.log(data.data)
         return data.data

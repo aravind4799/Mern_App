@@ -165,7 +165,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
 
                         if (values.action === 'Add') {
                             axios({
-                                url: "http://localhost:5000/invoice/",
+                                url: "/invoice/",
                                 method: "POST",
                                 data: values
                             })
@@ -183,7 +183,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                         }
                         else {
                             axios({
-                                url: "http://localhost:5000/invoice/" + values.editRecord_id,
+                                url: "/invoice/" + values.editRecord_id,
                                 method: "PUT",
                                 data: values
                             })
@@ -215,7 +215,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                 onClick={() => {
                                     handleAddInvoiceToggle((prev_value) => (!prev_value))
                                     axios({
-                                        url: "http://localhost:5000/invoice/",
+                                        url: "/invoice/",
                                         method: "GET"
                                     })
                                         .then((res) => { updateInvoiceData(res.data) })

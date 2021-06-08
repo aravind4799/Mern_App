@@ -66,7 +66,7 @@ export const AddCustomer = () => {
             isOpen: false,
         })
             axios({
-                url:"http://localhost:5000/customers/" + id,
+                url:"/customers/" + id,
                 method:"DELETE",
             })
             .then(function(response) {
@@ -74,7 +74,7 @@ export const AddCustomer = () => {
                 console.log(response.status);
                 
                 axios({
-                    url:"http://localhost:5000/customers/",
+                    url:"/customers/",
                     method:"GET"
                 })
                 .then((res)=>{setCustomerData(res.data)})
@@ -265,7 +265,7 @@ export const AddInvoice = () => {
             isOpen: false,
         })
             axios({
-                url:"http://localhost:5000/invoice/" + id,
+                url:"/invoice/" + id,
                 method:"DELETE",
             })
             .then(function(response) {
@@ -273,7 +273,7 @@ export const AddInvoice = () => {
                 console.log(response.status);
                 
                 axios({
-                    url:"http://localhost:5000/invoice/",
+                    url:"/invoice/",
                     method:"GET"
                 })
                 .then((res)=>{setInvoiceData(res.data)})

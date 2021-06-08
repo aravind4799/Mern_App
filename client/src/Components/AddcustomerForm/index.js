@@ -211,7 +211,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                     onClick={() => {
                                         handleAddCustomerToggle((prev_value) => (!prev_value))
                                         axios({
-                                            url: "http://localhost:5000/customers/",
+                                            url: "/customers/",
                                             method: "GET"
                                         })
                                             .then((res) => { updateCustomerData(res.data) })
