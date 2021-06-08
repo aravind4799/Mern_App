@@ -13,7 +13,7 @@ const options = {
 };
 
 const connection = async () => {
-  const url =
+  const url =process.env.MONGOLAB_URI ||
     'mongodb+srv://admin_ehte:test@cluster0.tmjbb.mongodb.net/test?retryWrites=true&w=majority';
 
   try {
@@ -48,4 +48,15 @@ app.use('/invoice/', invoiceRoutes);
 //   res.sendFile(path.join(__dirname, '/client/build'));
 // });
 
+if(process.env.NODE_ENV === 'production') {
+
+  app.use(express.static('client/build'));
+
+  app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname,  "client","build","index.html"));
+  });
+}
+
 app.listen(process.env.PORT || 5000, () => console.log("Server Started"));
+
+
