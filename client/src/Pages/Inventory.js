@@ -66,7 +66,7 @@ export const AddItem = () => {
             isOpen: false,
         })
             axios({
-                url:"http://localhost:5000/items/" + id,
+                url:"/items/" + id,
                 method:"DELETE",
             })
             .then(function(response) {
@@ -74,7 +74,7 @@ export const AddItem = () => {
                 console.log(response.status);
                 
                 axios({
-                    url:"http://localhost:5000/items/",
+                    url:"/items/",
                     method:"GET"
                 })
                 .then((res)=>{setProductData(res.data)})

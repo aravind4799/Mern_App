@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const url = "http://localhost:5000/items/";
-const url2="http://localhost:5000/customers/";
-const url3="http://localhost:5000/invoice/";
+const url = "/items/";
+const url2="/customers/";
+const url3="/invoice/";
 
 export const fetchdata = async () => {
     try{

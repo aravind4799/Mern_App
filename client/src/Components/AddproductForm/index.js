@@ -167,7 +167,7 @@ const AddproductForm = ({ editRecordData, handleAdditemToggle, updateProductData
                                 onClick={() => {
                                     handleAdditemToggle((prev_value) => (!prev_value))
                                     axios({
-                                        url: "http://localhost:5000/items/",
+                                        url: "/items/",
                                         method: "GET"
                                     })
                                         .then((res) => { updateProductData(res.data) })
