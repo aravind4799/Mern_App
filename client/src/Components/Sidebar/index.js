@@ -59,7 +59,7 @@ const showSidebar = () => setSidebar(!sidebar)
                 </NavIcon>
                 {SidebarData.map((items,index)=>{
                     return (
-                        <SubMenu item={items} key={index} />
+                        <SubMenu item={items} key={index} handleDisplay={showSidebar} />
                     ) 
                 })}
             </SidebarWrap>
