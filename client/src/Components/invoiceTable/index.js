@@ -11,6 +11,8 @@ import { fetchdata } from '../../Api'
 import { MenuItem, Select, Button } from '@material-ui/core';
 import * as AiIcons from 'react-icons/ai'
 import * as BiIcons from 'react-icons/bi'
+
+import {GrFormAdd} from 'react-icons/gr'
 import Notification from '../Notification';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import axios from "axios";
@@ -20,6 +22,11 @@ import getSeconds from 'date-fns/esm/getSeconds/index';
 
 
 const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
+
+  function round_to_2decimal(num) {
+    var m = Number((Math.abs(num) * 100).toPrecision(15));
+    return Math.round(m) / 100 * Math.sign(num);
+}
   console.log(taxType)
 
   // const { submitForm } = useFormikContext();
@@ -55,16 +62,16 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
   const [data, setData] = useState(itemList)
   const [rate, setRate] = useState(0)
   const [tax, setTax] = useState('')
-  const [tax_preference,setTaxPreference] = useState("")
-  const[round_off,setRoundoff]=useState(0)
- 
-  const [gst,setGst]=useState(0)
-  const [finalTotal,setFinalTotal] = useState(0)
-
+  const [tax_preference,setTaxPreference] = useState(editRecordData ? editRecordData.tax_preference : null)
+  const[round_off,setRoundoff]=useState(editRecordData ? editRecordData.round_off : 0)
+  const[adjustments,setAdjustments]=useState(editRecordData ? editRecordData.adjustment_title:"Adjustments")
+  const[adjustment_amount,setAdjustmentAmount]=useState(editRecordData ? editRecordData.adjustment_amount :0)
+  const [AdjustmentType,setAdjustmentType]=useState(editRecordData ? editRecordData.adjustment_type :'add')
+  const [gst,setGst]=useState(editRecordData ? editRecordData.gst : 0)
+  const [finalTotal,setFinalTotal] = useState(editRecordData ? editRecordData.invoice_amount:0)
   const[itemData, setProductData] = useState({})
-
   const[calculation_array,setCalculationArray]=useState([])
-  const[rate_tax_array,setRateTax]=useState([])
+  let[rate_tax_array,setRateTax]=useState(editRecordData ? editRecordData.rate_tax_array:[])
 
   const [table_data, setTableData] = useState({
     itemName: '',
@@ -75,26 +82,12 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
     discountAmount: editRecordData ? editRecordData.discount_amount : 0,
     shippingCharges: editRecordData ? editRecordData.shipping_charges : 0,
     subTotal: editRecordData ? editRecordData.sub_total : 0,
-    finalTotal: editRecordData ? editRecordData.invoice_amount : 0,
     itemData: {}
   })
 
   useEffect(() => {
     fetchAPI2()
   }, []);
-
-  useEffect(() => {
-    calculateTotal()
-    // setFieldValue('invoice_amount',table_data.finalTotal)
-    setFieldValue('sub_total', table_data.subTotal)
-    setFieldValue('discount_amount', table_data.discountAmount)
-    setFieldValue('discount_type', table_data.discountType)
-    setFieldValue('shipping_charges', table_data.shippingCharges)
-  }, [table_data.shippingCharges, table_data.discountAmount, table_data.discountType, table_data.subTotal])
-
-  useEffect(() => {
-    setFieldValue('invoice_amount', table_data.finalTotal)
-  }, [table_data.finalTotal])
 
   useEffect(() => {
     setFieldValue('items', data)
@@ -111,10 +104,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
 
   },[table_data.itemName])
 
-  useEffect(() => {
-    calculateGST()
-  },[rate_tax_array])
-
+  
  useEffect(() => {
    let i;
    let final_tax=0;
@@ -125,6 +115,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
 
   rate_tax_array.map((data,index)=>{
       let UNIT_PRICE = tax_preference==='exclude' ? data.amount : (data.amount/(100+data.tax))*100
+      UNIT_PRICE=round_to_2decimal(UNIT_PRICE)
       let DISCOUNTED_AMOUNT = table_data.discountType==='percentage' ? (UNIT_PRICE - (UNIT_PRICE * table_data.discountAmount) / 100) : UNIT_PRICE-table_data.discountAmount
       calc_array.push(
         {
@@ -142,6 +133,8 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
     final_tax+=calc_array[i].tax_amount
     final_discounted_amount+=calc_array[i].discounted_amount
   }
+  final_tax=round_to_2decimal(final_tax)
+  final_discounted_amount=round_to_2decimal(final_discounted_amount)
   setGst(final_tax)
   console.log(gst)
   if(tax_preference==='exclude'){
@@ -152,28 +145,33 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
   }
 
   let FinalTotal = final_total+parseInt(table_data.shippingCharges)
+  if(AdjustmentType==='add'){
+    FinalTotal+=adjustment_amount
+  }
+  else{
+    FinalTotal-=adjustment_amount
+  }
 
-  // let FinalTotal_before_decimal= FinalTotal/1
-
-  // let FinalTotal_after_decimal=FinalTotal%1
-
-  // if(FinalTotal_after_decimal >=0.5 ){
-  //   FinalTotal=FinalTotal_before_decimal+1
-  // }
-  // else{
-  //   FinalTotal=FinalTotal_before_decimal
-  // }
-  // let roundoff= 1-FinalTotal_after_decimal
-  // setRoundoff(roundoff)
-   setRoundoff(Math.round(FinalTotal)-FinalTotal)
-
-  setFinalTotal(  Math.round(FinalTotal))
-
-
+  setRoundoff(round_to_2decimal(Math.abs(Math.round(FinalTotal)-FinalTotal)))
+  FinalTotal= Math.round(FinalTotal)
+  setFinalTotal(FinalTotal)
+  console.log(FinalTotal)
   console.log(finalTotal)
 
+  setFieldValue('rate_tax_array',rate_tax_array)
+  setFieldValue('sub_total', table_data.subTotal)
+  setFieldValue('invoice_amount',FinalTotal)
+  setFieldValue('discount_amount', table_data.discountAmount)
+  setFieldValue('discount_type', table_data.discountType)
+  setFieldValue('shipping_charges', table_data.shippingCharges)
+  setFieldValue('gst',gst)
+  setFieldValue('round_off',round_off)
+  setFieldValue('adjustment_amount',adjustment_amount)
+  setFieldValue('adjustment_type',AdjustmentType)
+  setFieldValue('adjustment_title',adjustments)
+  setFieldValue('tax_preference',tax_preference)
 
- },[tax_preference,table_data.discountType,table_data.discountAmount,rate_tax_array,table_data.shippingCharges])
+ },[tax_preference,table_data.discountType,table_data.discountAmount,rate_tax_array,table_data.shippingCharges,adjustment_amount,AdjustmentType])
 
 
 
@@ -244,23 +242,10 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
     },
     {
       title: "Tax", field: "tax", editComponent: () => (
-        // <Autocomplete
-        // id="tax_box"
-        // value={taxType}
-        // onChange={(event, newValue) => {
-        //     setTaxType(newValue.tax_preference);
-        // }}
-        // options={item_data}
-        // getOptionLabel= {(option) => option.tax_preference ? option.tax_preference : ""}
-        // style={{ width: 300 }}
-        // renderInput={(params) => <TextField {...params} label="Tax Type" variant="outlined" />}
-        // />
+       
         <TextField
           value={tax ? tax : 0}
           disabled
-          //   onChange={(event, newValue) => {
-          //     setRate(newValue);
-          // }}
           type="text"
         />
       )
@@ -275,46 +260,6 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
     }
   ]
 
-  function calculateTotal() {
-    console.log('called')
-    let total = 0;
-
-    if (table_data.subTotal !== 0 || table_data.shippingCharges !== 0 || table_data.discountAmount !== 0) {
-
-      if (table_data.discountType === 'percentage') {
-        total = table_data.subTotal - ((table_data.subTotal * table_data.discountAmount) / 100) + table_data.shippingCharges;
-      } else {
-        total = table_data.subTotal - table_data.discountAmount + table_data.shippingCharges;
-      }
-      console.log(total)
-      setTableData((prev_value) => ({
-        ...prev_value,
-        finalTotal: total
-      }))
-
-
-      console.log(table_data)
-
-    }
-
-   
-
-    // setTotal(total)
-    // setFieldValue('total',total)
-
-
-    // return total;
-  }
-  function calculateGST(){
-    let gstTax=0;
-    rate_tax_array.map((data,index)=>{
-      gstTax+=data.tax_amount
-    })
-    setGst(gstTax)
-
-  }
-
-
 
   return (
     <div className="App">
@@ -326,6 +271,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
           helperText="tax preference"
           style={{ width: '25%'}}
           margin="normal"
+          value={tax_preference}
           inputProps={{ style: { fontSize: 20 } }} // font size of input text
           InputLabelProps={{ style: { fontSize: 20 } }} // font size of input label 
           onChange={(e)=>{
@@ -397,8 +343,18 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
             const updatedRows = [...data]
             updatedRows.splice(index, 1)
             setTimeout(() => {
+
               setData(updatedRows)
               // setProductsData(updatedRows)
+              let sub = 0;
+              updatedRows.forEach(row => {
+                const rowamt = row.amt;
+                sub = sub + rowamt;
+              })
+              setTableData((prev_value) => ({
+                ...prev_value,
+                subTotal: sub
+              }))
               let i;
 
               for(i=0;i<rate_tax_array.length;i++){
@@ -436,7 +392,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
 
 
    
-        {calculation_array.map((data,index)=>{
+        {/* {calculation_array.map((data,index)=>{
           return(
             <>
             <span>amount:  {data.amount}</span>
@@ -447,8 +403,8 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
             
             </>
           )
-        })}
-        <span>roundoff:  {round_off}</span>
+        })} */}
+        
 
 
 
@@ -530,8 +486,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
           value={table_data.shippingCharges}
           onChange={(e) => {
             var ShippingCharges = isNaN(parseInt(e.target.value)) ? parseInt(0) : parseInt(e.target.value)
-            // setShippingCharges(parseInt(e.target.value))
-
+            
             setTableData((prev_value) => ({
               ...prev_value,
               shippingCharges: ShippingCharges
@@ -544,7 +499,58 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
           }}
         />
 
+        <Grid container>
+            <Grid item><p>Round Off:<BiIcons.BiRupee /></p></Grid>
+            <Grid item><p>{round_off}</p></Grid>
+        </Grid>
 
+
+
+        <Grid container >
+          <Grid item >
+            <TextField
+              variant="standard"
+              type='text'
+              value={adjustments}
+              onChange={(e)=>{
+                setAdjustments(e.target.value)
+              }}
+              label='Adjustments'
+              InputLabelProps={{ style: { fontSize: 20 } }}
+            />
+          </Grid>
+          <Grid item  alignitems style={{ display: "flex" }}  >
+            <Select
+
+              value={AdjustmentType}
+              select
+              onChange={(e) => {
+                setAdjustmentType(e.target.value)
+              }}
+            >
+              <MenuItem key='3' value='add'>{<GrFormAdd/>}</MenuItem>
+              <MenuItem key='4' value='minus'>{<BiIcons.BiMinus />}</MenuItem>
+            </Select>
+          </Grid>
+          
+          <Grid item  alignitems style={{ display: "flex" }}  >
+          <TextField
+              variant="standard"
+              value={adjustment_amount}
+              type='tel'
+              label='Amount'
+              InputLabelProps={{ style: { fontSize: 20 } }}
+              InputProps={{
+                startAdornment: <InputAdornment position="end"><BiIcons.BiRupee /></InputAdornment>
+              }}
+              onChange={(e) => {
+                var Adj_amount = isNaN(parseInt(e.target.value)) ? parseInt(0) : parseInt(e.target.value)
+                setAdjustmentAmount(Adj_amount)
+              }}
+            />
+            
+          </Grid>
+        </Grid>
 
 
         <Grid container>

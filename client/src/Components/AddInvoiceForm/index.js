@@ -89,7 +89,14 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
         discount_type: editRecordData ? editRecordData.discount_type :0,
         shipping_charges: editRecordData ? editRecordData.shipping_charges:0,
 
+        gst: editRecordData ? editRecordData.gst :0,
+        round_off: editRecordData ? editRecordData.round_off :0,
+        adjustment_amount: editRecordData ? editRecordData.adjustment_amount :0,
+        adjustment_type: editRecordData ? editRecordData.adjustment_type :"",
+        adjustment_title: editRecordData ? editRecordData.adjustment_title :"",
+        tax_preference: editRecordData ? editRecordData.tax_preference :"",
         editRecord_id: editRecordData ? editRecordData._id : '',
+        rate_tax_array: editRecordData ? editRecordData.rate_tax_array :[],
         action: null
     }
     // editRecordData = null;

@@ -58,6 +58,27 @@ const invoiceSchema = new mongoose.Schema({
     "discount_type":{
       "type":'String'
     },
+    "gst":{
+      "type":"Number"
+    },
+    "round_off":{
+      "type":"Number"
+    },
+    "adjustment_amount":{
+      "type":"Number"
+    },
+    "adjustment_type":{
+      "type":"String"
+    },
+    "adjustment_title":{
+      "type":"String"
+    },
+    "tax_preference":{
+      "type":"String"
+    },
+    "rate_tax_array":{
+      "type":["mixed"]
+    },
     "updated_place_of_supply":{"type":"String"}
   });
 
