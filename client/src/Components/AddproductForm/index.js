@@ -388,8 +388,8 @@ const AddproductForm = ({ editRecordData, handleAdditemToggle, updateProductData
                                 InputLabelProps={{ style: { fontSize: 20 } }} // font size of input label
                             >
                                 {Interstate_Taxrates.map((data, index) => (
-                                    <MenuItem key={index} value={data}>
-                                        {data}
+                                    <MenuItem key={index} value={data.value}>
+                                        {data.label}
                                     </MenuItem>
                                 ))}
                             </Field>
@@ -406,8 +406,8 @@ const AddproductForm = ({ editRecordData, handleAdditemToggle, updateProductData
                                 InputLabelProps={{ style: { fontSize: 20 } }} // font size of input label
                             >
                                 {Intrastate_Taxrates.map((data, index) => (
-                                    <MenuItem key={index} value={data}>
-                                        {data}
+                                    <MenuItem key={index} value={data.value}>
+                                        {data.label}
                                     </MenuItem>
                                 ))}
                             </Field>

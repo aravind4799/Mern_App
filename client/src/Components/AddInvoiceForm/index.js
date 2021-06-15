@@ -34,6 +34,9 @@ import axios from "axios";
 import { set } from 'mongoose';
 
 const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceData }) => {
+
+
+ 
     const [sales_checked, setsales] = useState(true)
     const [purchase_checked, setpurchase] = useState(true)
     const [track_inventory_checked, settrackinventory] = useState(false)
@@ -57,7 +60,18 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
 
 
     const [placetosupply,setPlaceToSupply]=useState(editRecordData ? editRecordData.updated_place_of_supply : '')
+    const [igst_or_gst,setTaxType]=useState(null)
 
+    useEffect(() => {
+        if(placetosupply==='Tamil Nadu'){
+            setTaxType(true)
+            //true means gst
+        }
+        else{setTaxType(false) 
+            //false means igst
+        }
+        
+    },[placetosupply,customer_details])
     // const [total,setTotal] = useState(0)
     const history = useHistory();
 
@@ -403,7 +417,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                             {isSubmitting && <LinearProgress />}
 
                             <div className='form_invoice-box-col2'>
-                             <AddInvoiceTable editRecordData={editRecordData} setFieldValue={setFieldValue} ></AddInvoiceTable>
+                             <AddInvoiceTable editRecordData={editRecordData} setFieldValue={setFieldValue} taxType={igst_or_gst} ></AddInvoiceTable>
                              {/* <Button
                                     className={['field', 'button'].join('')}
                                     variant="contained"
