@@ -3,7 +3,7 @@ import './App.css';
 import MaterialTable from 'material-table'
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import {Autocomplete} from '@material-ui/lab';
 
 import Icons from './tableIcons';
 import { setQuarter } from 'date-fns';
@@ -69,7 +69,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
   const [AdjustmentType,setAdjustmentType]=useState(editRecordData ? editRecordData.adjustment_type :'add')
   const [gst,setGst]=useState(editRecordData ? editRecordData.gst : 0)
   const [finalTotal,setFinalTotal] = useState(editRecordData ? editRecordData.invoice_amount:0)
-  const[itemData, setProductData] = useState({})
+  const[itemData, setProductData] = useState(item_data[0])
   const[calculation_array,setCalculationArray]=useState([])
   let[rate_tax_array,setRateTax]=useState(editRecordData ? editRecordData.rate_tax_array:[])
 
@@ -82,7 +82,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
     discountAmount: editRecordData ? editRecordData.discount_amount : 0,
     shippingCharges: editRecordData ? editRecordData.shipping_charges : 0,
     subTotal: editRecordData ? editRecordData.sub_total : 0,
-    itemData: {}
+  
   })
 
   useEffect(() => {
@@ -94,15 +94,18 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
   }, [data])
 
   useEffect(() => {
-    setRate(itemData.selling_price)
+    if(itemData){
+      setRate(itemData.selling_price)
     if (taxType) {
       setTax(itemData.inter_tax_rate)
     }
     else {
       setTax(itemData.intra_tax_rate)
     }
+    }
+    
 
-  },[table_data.itemName])
+  },[table_data.itemName,itemData])
 
   
  useEffect(() => {
@@ -185,23 +188,33 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
           id="item_box"
           onChange={(event, newValue) => {
             console.log(newValue);
-            setProductData(newValue)
+
+            
+            if(newValue){
+              setProductData(newValue)
+              setTableData((prev_value) => ({
+                ...prev_value,
+                itemName: newValue.name,
+              }))
+
+            }
+            
           }}
 
           options={item_data}
           getOptionLabel={(option) => option.name ? option.name : ""}
-          getOptionSelected={(option, value) => option === value}
+          // getOptionSelected={(option, value) => option === value}
           value={itemData}
-          onInputChange={(event, inputValue) => {
-            console.log(inputValue)
-            setTableData((prev_value) => ({
-              ...prev_value,
-              itemName: inputValue,
-            }))
+          // onInputChange={(event, newValue) => {
+          //   console.log(newValue)
+          //   setTableData((prev_value) => ({
+          //     ...prev_value,
+          //     itemName: newValue,
+          //   }))
 
-            console.log(table_data)
-          }}
-          inputValue={table_data.itemName}
+          //   console.log(table_data)
+          // }}
+          // inputValue={table_data.itemName}
           style={{ width: 300 }}
           renderInput={(params) => <TextField {...params} label="Item Name" variant="outlined" />}
         />

@@ -27,6 +27,7 @@ import { Formik, Form, Field } from 'formik';
 import { Button, LinearProgress, MenuItem, TextField as TF, FormControlLabel, Checkbox } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { Autocomplete } from "formik-material-ui-lab";
+import {Autocomplete as AC} from '@material-ui/lab';
 import KeyboardBackspaceOutlinedIcon from '@material-ui/icons/KeyboardBackspaceOutlined';
 import AddIcon from '@material-ui/icons/Add';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
@@ -54,12 +55,13 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
     const [shipping_address,setShippingAddress] = useState({})
     // const [place_to_supply,setPlaceToSupply] = useState(null)
 
-    const [customer_details, setCustomerDetails] = useState(editRecordData ? editRecordData.customer_details:{})
+    const [customer_details, setCustomerDetails] = useState(editRecordData ? editRecordData.customer_details:customer_data[0])
     const [customer_name,setCustomerName]=useState(editRecordData ? editRecordData.customer_name:'')
     const [isDetailsUpdated,setdetailsUpdated] = useState(editRecordData ? true : false)
 
 
-    const [placetosupply,setPlaceToSupply]=useState(editRecordData ? editRecordData.updated_place_of_supply : '')
+    const [placetosupply,setPlaceToSupply]=useState(editRecordData ? editRecordData.updated_place_of_supply : "")
+    const [PlaceToSupplyValue,setPlaceToSupplyValue] = useState(editRecordData ? editRecordData.updated_place_of_supply : place_of_supply[0])
     const [igst_or_gst,setTaxType]=useState(null)
 
     useEffect(() => {
@@ -115,7 +117,6 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
 
     const fetchAPI3 = async () => {
         setCustomerData(await fetchcustomerdetails());
-
     }
 
     useEffect(() => {
@@ -244,54 +245,29 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                 }}
                                 > <KeyboardBackspaceOutlinedIcon /> Back</Button>
 
-                                <Field
-                                    
-                                    name="customer_details"
-                                    component={Autocomplete}
-                                    
+                                <AC
                                     options={customer_data}
                                     getOptionLabel={(option) => option.name ? option.name : ""}
                                     value={customer_details}
-                                    onChange={(e,value)=>{
-
-                                        setCustomerDetails(value)
-                                        if(!isNaN(value)){
+                                    onChange={(e,newValue)=>{
+                                        setCustomerDetails(newValue)
+                                        if(!isNaN(newValue)){
                                         setPlaceToSupply('')                                            
                                         }
                                         else{
-                                            setPlaceToSupply(value.place_of_supply)
+                                            setPlaceToSupply(newValue.place_of_supply)
                                         }
-
-                                        // setdetailsUpdated(true)
                                     }}
-                                    // groupBy={(options) =>{
-                                    //     setFieldValue=('customer_id',options.id)
-                                    //     setFieldValue=('billing_address',options.billing_address)
-                                    //     setFieldValue=('shipping_address',options.shipping_address)
-                                    //     setFieldValue=('place_to_supply',options.place_to_supply)
-                                    //     setBillingAddress(options.billing_address)
-                                    //     setShippingAddress(options.shipping_address)
-                                    //     setPlaceToSupply(options.place_to_supply)
-                                        
-                                    //     return null;
-                                    // }}
-                                    onInputChange={(e,value)=>{
-                                        setCustomerName(value)
+                                    onInputChange={(e,newValue)=>{
+                                        setCustomerName(newValue)
                                         setdetailsUpdated(true)
-                                       
-                                        if(!isNaN(value)){
-                                            // console.log("was here")
+                                        if(!isNaN(newValue)){
                                             setdetailsUpdated(false)
-                                        }
-                                        
-                                        
-                                       
+                                        } 
                                     }}
+                                    id='controllable-states'
                                     inputValue={customer_name||''}
-                                    
-                                
                                     renderInput={(params) => (
-
                                         <TF {...params} 
                                         inputprops={{ style: { fontSize: 20 } }}
                                         InputLabelProps={{ style: { fontSize: 20 } }} 
@@ -302,7 +278,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
 
                                     )}
                                 />
-                                {isDetailsUpdated ? 
+                                {isDetailsUpdated && customer_details ? 
                                 <div className='billing_box'>
 
                                 <div className='billing_box_col1' >
@@ -324,17 +300,17 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                 </div>
 
 
-                                <Field
+                                <AC
                                     // name="customer_details"
-                                    component={Autocomplete}
+                                    // component={Autocomplete}
                                     options={place_of_supply}
-                                    getOptionLabel={(option) => option ? option : ""}
-                                    value={placetosupply}
-                                    onChange={(e,value)=>{
-                                        setPlaceToSupply(value)
+                                    value={PlaceToSupplyValue}
+                                    onChange={(e,newValue) =>{
+                                        setPlaceToSupplyValue(newValue)
                                     }}
-                                    onInputChange={(e,value)=>{
-                                        setPlaceToSupply(value)
+                                    getOptionLabel={(option) => option ? option : ""}
+                                    onInputChange={(e,newValue)=>{
+                                        setPlaceToSupply(newValue)
                                     }}
                                     inputValue={placetosupply||''}
                                     renderInput={(params) => (
