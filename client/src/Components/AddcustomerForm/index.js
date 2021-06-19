@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   }));
 
 
-const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustomerData }) => {
+const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustomerData,isSalesRoute,route }) => {
     console.log(editRecordData)
     const classes = useStyles();
     
@@ -160,7 +160,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
 
                         if (values.action === 'Add') {
                             axios({
-                                url: "/customers/",
+                                url: route,
                                 method: "POST",
                                 data: values
                             })
@@ -178,7 +178,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                         }
                         else {
                             axios({
-                                url: "/customers/" + values.editRecord_id,
+                                url: route + values.editRecord_id,
                                 method: "PUT",
                                 data: values
                             })
@@ -219,7 +219,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                     }
                                     }> <KeyboardBackspaceOutlinedIcon /> Back</Button>
 
-                                <Field
+                                {isSalesRoute  && <Field
                                     component={TextField}
                                     type="text"
                                     name="customer_type"
@@ -235,7 +235,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                     <MenuItem value='Business'>Business</MenuItem>
                                     <MenuItem value='Individual'>Individual</MenuItem>
 
-                                </Field>
+                                </Field>}
 
 
                                 <div className="same-row">
@@ -319,7 +319,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                     type="text"
                                     name="display_name"
                                     className='field'
-                                    label="Customer Display Name"
+                                    label={isSalesRoute ? "Customer Display Name" : "Vendor Display Name"}
                                     variant="standard"
                                     margin="normal"
                                     
@@ -342,7 +342,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                     type="email"
                                     name="email"
                                     className='field'
-                                    label="Customer Email"
+                                    label={isSalesRoute ? "Customer Email" : "Vendor Email"}
                                     variant="standard"
                                     margin="normal"
                                     inputProps={{ style: { fontSize: 18 } }} // font size of input text
@@ -397,7 +397,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
 
                                     {Gst_treatmentData.map((data, index) => {
                                         return (
-                                            <MenuItem className={classes.listItem} key={index} value={data.split('\n')[0]}>{data}</MenuItem>
+                                            <MenuItem className={classes.listItem} key={index} value={data.value}>{data.label}</MenuItem>
                                         )
                                     })}
 
@@ -751,7 +751,9 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                 inputProps={{ style: { fontSize: 22 } }}
                                 InputLabelProps={{ style: { fontSize: 22 } }}
                             >
-                                {isEditData ? "Update Customer" : "Add Customer"}
+                                {isEditData ? 
+                                isSalesRoute ? "Update Customer":"Update Vendor" :
+                                isSalesRoute ? "Add Customer" : "Add Vendor"}
                             </Button>}
 
                             {isEditData && <FormControlLabel
@@ -762,7 +764,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                         color="primary"
                                     />
                                 }
-                                label="Add This As New Customer"
+                                label={isSalesRoute ? "Add This As New Customer":"Add This As New Vendor"}
                             />}
 
                             {addbutton_disabled &&
@@ -780,7 +782,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                         inputProps={{ style: { fontSize: 22 } }}
                                         InputLabelProps={{ style: { fontSize: 22 } }}
                                     >
-                                        Add Customer
+                                        {isSalesRoute ? "Add Customer": "Add Vendor" }
                             </Button>
                                 </>}
                             </div>

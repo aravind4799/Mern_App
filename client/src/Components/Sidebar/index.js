@@ -43,7 +43,10 @@ width:100%;
 
 const Sidebar = () => {
 const [sidebar,setSidebar]=useState(false)
-const showSidebar = () => setSidebar(!sidebar)
+const showSidebar = (e) => {
+    setSidebar(!sidebar)
+   
+}
     return (
         <>
         <IconContext.Provider value={{color:'#fff'}}>
@@ -59,7 +62,7 @@ const showSidebar = () => setSidebar(!sidebar)
                 </NavIcon>
                 {SidebarData.map((items,index)=>{
                     return (
-                        <SubMenu item={items} key={index} handleDisplay={showSidebar} />
+                        <SubMenu item={items} key={index} handleDisplay={showSidebar}  />
                     ) 
                 })}
             </SidebarWrap>

@@ -1,8 +1,5 @@
 const mongoose = require("mongoose");
-const customer_detailsSchema = new mongoose.Schema({
-  name:String,
-  id:String
-})
+
 const invoiceSchema = new mongoose.Schema({
     "customer_details": {
       "name":{"type":"String"},

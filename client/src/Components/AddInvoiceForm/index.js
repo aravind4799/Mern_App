@@ -23,7 +23,7 @@ import Notification from '../Notification';
 import AddInvoiceTable from '../invoiceTable';
 import place_of_supply from './Place_of_supply';
 
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, validateYupSchema } from 'formik';
 import { Button, LinearProgress, MenuItem, TextField as TF, FormControlLabel, Checkbox } from '@material-ui/core';
 import { TextField } from 'formik-material-ui';
 import { Autocomplete } from "formik-material-ui-lab";
@@ -34,7 +34,7 @@ import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import axios from "axios";
 import { set } from 'mongoose';
 
-const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceData }) => {
+const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceData,isSalesRoute,route }) => {
 
 
  
@@ -77,7 +77,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
     // const [total,setTotal] = useState(0)
     const history = useHistory();
 
-    var initialValues = {
+    var initialValues_invoice = {
         customer_details: editRecordData ? editRecordData.customer_details : {},
         invoice_number: editRecordData ? editRecordData.invoice_number : '',
         order_number: editRecordData ? editRecordData.order_number : '',
@@ -86,6 +86,30 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
         invoice_due_date: editRecordData ? editRecordData.invoice_due_date : new Date(),
         items: editRecordData ? editRecordData.items : [],
         invoice_amount: null,
+        sub_total:editRecordData ? editRecordData.sub_total :0,
+        discount_amount: editRecordData ? editRecordData.discount_amount :0,
+        discount_type: editRecordData ? editRecordData.discount_type :0,
+        shipping_charges: editRecordData ? editRecordData.shipping_charges:0,
+
+        gst: editRecordData ? editRecordData.gst :0,
+        round_off: editRecordData ? editRecordData.round_off :0,
+        adjustment_amount: editRecordData ? editRecordData.adjustment_amount :0,
+        adjustment_type: editRecordData ? editRecordData.adjustment_type :"",
+        adjustment_title: editRecordData ? editRecordData.adjustment_title :"",
+        tax_preference: editRecordData ? editRecordData.tax_preference :"",
+        editRecord_id: editRecordData ? editRecordData._id : '',
+        rate_tax_array: editRecordData ? editRecordData.rate_tax_array :[],
+        action: null
+    }
+    var initialValues_bill = {
+        bill_details: editRecordData ? editRecordData.bill_details : {},
+        bill_number: editRecordData ? editRecordData.bill_number : '',
+        order_number: editRecordData ? editRecordData.order_number : '',
+        bill_date: editRecordData ? editRecordData.bill_date : new Date(),
+        bill_terms: editRecordData ? editRecordData.bill_terms : '',
+        bill_due_date: editRecordData ? editRecordData.bill_due_date : new Date(),
+        items: editRecordData ? editRecordData.items : [],
+        bill_amount: null,
         sub_total:editRecordData ? editRecordData.sub_total :0,
         discount_amount: editRecordData ? editRecordData.discount_amount :0,
         discount_type: editRecordData ? editRecordData.discount_type :0,
@@ -123,26 +147,11 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
         fetchAPI3();
     }, []);
 
-    // const fetchcustomeraddress= async(id)=>{
-    //     console.log(id)
-    //     setBillingAddress(await fetchcustomer(id))
-    // }
-
-    // useEffect(() =>{
-    //     fetchcustomeraddress(initialValues.customer_details.id);
-    // },[initialValues.customer_details])
-
-
-
-
-
-   
-
     return (
         <>
 
             <Formik
-                initialValues={initialValues}
+                initialValues={isSalesRoute ? initialValues_invoice : initialValues_bill}
                 enableReinitialize={true}
                 validate={(values) => {
                     const errors = {};
@@ -161,8 +170,15 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                         // values.customer_id = customer_id;
                         // console.log('customer_id : '+customer_id);
                         // alert(JSON.stringify(values, null, 2))
-                        values.customer_details=customer_details
-                        values.updated_place_of_supply=placetosupply
+                        if(isSalesRoute){
+                            values.customer_details=customer_details
+                            values.updated_place_of_supply=placetosupply
+                        }
+                        else{
+                            values.bill_details=customer_details
+                            values.updated_place_of_supply=placetosupply
+                        }
+                       
                         setdetailsUpdated(false)
                         console.log(JSON.stringify(values, null, 2))
                         setCustomerDetails({})
@@ -187,7 +203,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
 
                         if (values.action === 'Add') {
                             axios({
-                                url: "/invoice/",
+                                url: route,
                                 method: "POST",
                                 data: values
                             })
@@ -205,7 +221,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                         }
                         else {
                             axios({
-                                url: "/invoice/" + values.editRecord_id,
+                                url: route + values.editRecord_id,
                                 method: "PUT",
                                 data: values
                             })
@@ -272,9 +288,9 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                         inputprops={{ style: { fontSize: 20 } }}
                                         InputLabelProps={{ style: { fontSize: 20 } }} 
                                         className='field'
-                                        label="Customer Name" 
+                                        label={isSalesRoute ? "Customer Name":"Vendor Name"}
                                         variant="standard" 
-                                        helperText='Select Customer' />
+                                        helperText={isSalesRoute ?'Select Customer':"Select Vendor"} />
 
                                     )}
                                 />
@@ -342,7 +358,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                     }}
                                     startIcon={<AddIcon />}
                                 >
-                                    New Customer
+                                    {isSalesRoute ? "New Customer":"New Vendor"}
                                 </Button>
 
                                 <Field className='field'
@@ -355,7 +371,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                  <Field className='field'
                                     component={TextField}
                                     
-                                    label="Invoice Number"
+                                    label={isSalesRoute ? "Invoice Number":"Bill Number"}
                                     name="invoice_number"  
                                     inputProps={{ style: { fontSize: 20 } }}
                                     InputLabelProps={{ style: { fontSize: 20 } }}
@@ -363,7 +379,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                  <Field className='field'
                                     component={DatePicker}
                                     name="invoice_date"
-                                    label="Invoice Date"
+                                    label={isSalesRoute ? "Invoice Date":"Bill Date"}
                                     minDate={new Date()}
                                     inputProps={{ style: { fontSize: 20 } }}
                                     InputLabelProps={{ style: { fontSize: 20 } }}

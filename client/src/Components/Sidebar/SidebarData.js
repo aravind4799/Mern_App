@@ -40,5 +40,28 @@ export const SidebarData =[
             }
         ]
 
+    },
+
+    {
+        title:'Purchases',
+        path:'purchase',
+        icon:<IoIcons.IoBagRemoveOutline/>,
+        iconClosed:<RiIcons.RiArrowDownSFill/>,
+        iconOpened:<RiIcons.RiArrowUpSFill/>,
+        subNav:[
+            {
+                title:'Add vendors',
+                path:'/purchase/addvendor',
+                icon:<AiIcons.AiOutlineUserAdd/>
+            },
+            {
+                title:'Bills',
+                path:'/purchase/addbill',
+                icon:<AiIcons.AiOutlineForm/>
+            }
+        ]
+
     }
+
+
 ]

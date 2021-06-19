@@ -38,7 +38,7 @@ const useStyles = makeStyles(theme => ({
     }
 }))
 
-export const AddCustomer = () => {
+export const AddCustomer = ({Sales,route}) => {
 
     const classes = useStyles();
     const [CustomerData, setCustomerData] = useState([])
@@ -66,7 +66,7 @@ export const AddCustomer = () => {
             isOpen: false,
         })
             axios({
-                url:"/customers/" + id,
+                url:route + id,
                 method:"DELETE",
             })
             .then(function(response) {
@@ -74,7 +74,7 @@ export const AddCustomer = () => {
                 console.log(response.status);
                 
                 axios({
-                    url:"/customers/",
+                    url:route,
                     method:"GET"
                 })
                 .then((res)=>{setCustomerData(res.data)})
@@ -117,7 +117,7 @@ export const AddCustomer = () => {
                 }
 
                 else {
-                    console.log(items.filter(x => x.display_name.includes('a')))
+                    // console.log(items.filter(x => x.display_name.includes('a')))
                     return items.filter(x => x.display_name.toLowerCase().includes(target));
                 }
 
@@ -135,14 +135,14 @@ export const AddCustomer = () => {
 
     return (
         <>
-        {addcustomer_toggle ? <AddcustomerForm editRecordData={recordEdit} handleAddCustomerToggle={setAddCustomer_toggle} updateCustomerData={setCustomerData} /> 
+        {addcustomer_toggle ? <AddcustomerForm route={route}isSalesRoute={Sales} editRecordData={recordEdit} handleAddCustomerToggle={setAddCustomer_toggle} updateCustomerData={setCustomerData} /> 
             :
             <div className='Table'>
                 <div className='Table-head'>
                 <TextField
                     className={classes.searchInput}
                     variant='outlined'
-                    label='Search Customer'
+                    label={Sales ? 'Search Customer' : 'Search Vendor'}
                     value={Value}
                     InputProps={{
                         startAdornment: (<InputAdornment position='start'><Search /></InputAdornment>)
@@ -155,7 +155,7 @@ export const AddCustomer = () => {
                 startIcon={<AddIcon/>}
                 onClick={handleAddCustomer}>
                 
-                Add Customer 
+                {Sales ? 'Add Customer' : 'Add Vendor'} 
                 </Button>
                 
                 </div>
@@ -237,7 +237,7 @@ export const AddCustomer = () => {
     )
 }
 
-export const AddInvoice = () => {
+export const AddInvoice = ({Sales,route}) => {
 
     const classes = useStyles();
     const [InvoiceData, setInvoiceData] = useState([])
@@ -265,7 +265,7 @@ export const AddInvoice = () => {
             isOpen: false,
         })
             axios({
-                url:"/invoice/" + id,
+                url:route + id,
                 method:"DELETE",
             })
             .then(function(response) {
@@ -273,7 +273,7 @@ export const AddInvoice = () => {
                 console.log(response.status);
                 
                 axios({
-                    url:"/invoice/",
+                    url:route,
                     method:"GET"
                 })
                 .then((res)=>{setInvoiceData(res.data)})
@@ -292,7 +292,7 @@ export const AddInvoice = () => {
 
 
 
-    const headCells = [
+    const headCells_invoice = [
         // disableSorting:true
         { id: 'invoice_date', label: 'DATE' },
         { id: 'invoice_number', label: 'INVOICE#' },
@@ -301,8 +301,25 @@ export const AddInvoice = () => {
         { id: 'due_date', label: 'DUE DATE' },
         { id: 'amount', label: 'AMOUNT' },
         {id:'actions',label:'ACTIONS'}
-        
     ]
+
+    const headCells_bill=[
+        { id: 'bill_date', label: 'DATE' },
+        { id: 'bill_number', label: 'BILL#' },
+        { id: 'order_number', label: 'ORDER NUMBER' },
+        { id: 'vendor_name', label: 'VENDOR NAME',},
+        { id: 'due_date', label: 'DUE DATE' },
+        { id: 'amount', label: 'AMOUNT' },
+        {id:'actions',label:'ACTIONS'}
+
+    ]
+    let headCells;
+    if(Sales){
+        headCells=headCells_invoice
+    }
+    else{
+        headCells=headCells_bill
+    }
 
 
     const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } = UseTable(InvoiceData, headCells, filterFn);
@@ -318,7 +335,7 @@ export const AddInvoice = () => {
                 }
 
                 else {
-                    console.log(items.filter(x => x.customer_name.includes('a')))
+                    // console.log(items.filter(x => x.customer_name.includes('a')))
                     return items.filter(x => x.customer_name.toLowerCase().includes(target));
                 }
 
@@ -336,14 +353,14 @@ export const AddInvoice = () => {
 
     return (
         <>
-        {addinvoice_toggle ? <AddInvoiceForm editRecordData={recordEdit} handleAddInvoiceToggle={setAddInvoice_toggle} updateInvoiceData={setInvoiceData} /> 
+        {addinvoice_toggle ? <AddInvoiceForm route={route} isSalesRoute={Sales} editRecordData={recordEdit} handleAddInvoiceToggle={setAddInvoice_toggle} updateInvoiceData={setInvoiceData} /> 
             :
             <div className='Table'>
                 <div className='Table-head'>
                 <TextField
                     className={classes.searchInput}
                     variant='outlined'
-                    label='Search Invoice'
+                    label={Sales ? 'Search Invoice': 'Search Bills'}
                     value={Value}
                     InputProps={{
                         startAdornment: (<InputAdornment position='start'><Search /></InputAdornment>)
@@ -356,7 +373,7 @@ export const AddInvoice = () => {
                 startIcon={<AddIcon/>}
                 onClick={handleAddInvoice}>
                 
-                Add Invoice 
+                {Sales ? "Add Invoice":"Add Bill"} 
                 </Button>
                 
                 </div>

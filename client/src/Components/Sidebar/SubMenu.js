@@ -53,7 +53,7 @@ const SubMenu = ({ item,handleDisplay }) => {
       <SidebarLink to={item.path} onClick={item.subNav && showSubnav} >
         <div>
           {item.icon}
-          <SidebarLabel onClick={handleDisplay}>{item.title}</SidebarLabel>
+          <SidebarLabel >{item.title}</SidebarLabel>
         </div>
         <div>
           {item.subNav && subnav
@@ -66,9 +66,9 @@ const SubMenu = ({ item,handleDisplay }) => {
       {subnav &&
         item.subNav.map((item, index) => {
           return (
-            <DropdownLink to={item.path} key={index} onClick={handleDisplay}>
+            <DropdownLink to={item.path} key={index}  onClick={handleDisplay}>
               {item.icon}
-              <SidebarLabel>{item.title}</SidebarLabel>
+              <SidebarLabel value={item.path}>{item.title}</SidebarLabel>
             </DropdownLink>
           );
         })}
