@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const invoiceSchema = new mongoose.Schema({
+const billSchema = new mongoose.Schema({
     "vendor_details": {
       "name":{"type":"String"},
       "id":{"type":"String"},
@@ -79,5 +79,5 @@ const invoiceSchema = new mongoose.Schema({
     "updated_place_of_supply":{"type":"String"}
   });
 
-// let invoiceModel = mongoose.model("invoice", invoiceSchema);
-// module.exports = invoiceModel
+let billModel = mongoose.model("bill", billSchema);
+module.exports = billModel

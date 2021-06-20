@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const itemSchema = new mongoose.Schema({
+const vendorSchema = new mongoose.Schema({
     "salutation": {
       "type": "String"
     },
@@ -96,5 +96,5 @@ const itemSchema = new mongoose.Schema({
   });
 
 
-// let customersModel = mongoose.model("customers", itemSchema);
-// module.exports = customersModel
+let vendorsModel = mongoose.model("vendors", vendorSchema);
+module.exports = vendorsModel
