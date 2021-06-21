@@ -29,7 +29,7 @@ const billSchema = new mongoose.Schema({
     "bill_date": {
       "type": "Date"
     },
-    "invoice_terms": {
+    "bill_terms": {
       "type": "String"
     },
     "bill_due_date": {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import './AddInvoiceForm.scss'
-import { fetchcustomerdetails } from '../../Api'
+import { fetchcustomerdetails, fetchvendordetails } from '../../Api'
 
 import * as AiIcons from 'react-icons/ai'
 import * as BiIcons from 'react-icons/bi'
@@ -55,8 +55,15 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
     const [shipping_address,setShippingAddress] = useState({})
     // const [place_to_supply,setPlaceToSupply] = useState(null)
 
-    const [customer_details, setCustomerDetails] = useState(editRecordData ? editRecordData.customer_details:customer_data[0])
-    const [customer_name,setCustomerName]=useState(editRecordData ? editRecordData.customer_name:'')
+    const [customer_details, setCustomerDetails] =
+     useState(isSalesRoute ? 
+        editRecordData ? editRecordData.customer_details:customer_data[0]:
+        editRecordData ? editRecordData.vendor_details :customer_data[0])
+
+    const [customer_name,setCustomerName]=
+    useState(isSalesRoute ? 
+        editRecordData ? editRecordData.customer_name:'':
+        editRecordData ? editRecordData.vendor_name:'')
     const [isDetailsUpdated,setdetailsUpdated] = useState(editRecordData ? true : false)
 
 
@@ -102,7 +109,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
         action: null
     }
     var initialValues_bill = {
-        bill_details: editRecordData ? editRecordData.bill_details : {},
+        vendor_details: editRecordData ? editRecordData.vendor_details : {},
         bill_number: editRecordData ? editRecordData.bill_number : '',
         order_number: editRecordData ? editRecordData.order_number : '',
         bill_date: editRecordData ? editRecordData.bill_date : new Date(),
@@ -140,7 +147,12 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
     }, [editRecordData])
 
     const fetchAPI3 = async () => {
+        if(isSalesRoute){
         setCustomerData(await fetchcustomerdetails());
+        }
+        else{
+            setCustomerData(await fetchvendordetails())
+        }
     }
 
     useEffect(() => {
@@ -175,7 +187,9 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                             values.updated_place_of_supply=placetosupply
                         }
                         else{
-                            values.bill_details=customer_details
+                            console.log("was here")
+                            console.log(customer_details)
+                            values.vendor_details=customer_details
                             values.updated_place_of_supply=placetosupply
                         }
                        
@@ -187,19 +201,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                         
 
 
-                        // axios({
-                        //     url: "http://localhost:5000/invoice/",
-                        //     method: "POST",
-                        //     data: values
-                        // }).then(function (response) {
-                        //         console.log(response.data);
-                        //         console.log(response.status);
-                        //     }).catch((err) => (console.log(err)))
-                        // setNotify({
-                        //     isOpen: true,
-                        //     message: "Invoice Added Successfully",
-                        //     type: 'success'
-                        // })
+                  
 
                         if (values.action === 'Add') {
                             axios({
@@ -215,7 +217,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                 .catch((err) => (console.log(err)))
                             setNotify({
                                 isOpen: true,
-                                message: "Invocie Added Successfully",
+                                message: isSalesRoute? "Invocie Added Successfully":"Bill added Successfully",
                                 type: 'success'
                             })
                         }
@@ -232,7 +234,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                 .catch((err) => (console.log(err)))
                             setNotify({
                                 isOpen: true,
-                                message: "Invoice Updated Successfully",
+                                message: isSalesRoute ? "Invoice Updated Successfully" : "Bill Updated Successfully",
                                 type: 'success'
                             })
                         }
@@ -252,12 +254,16 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                     color="secondary"
                                 onClick={() => {
                                     handleAddInvoiceToggle((prev_value) => (!prev_value))
-                                    axios({
-                                        url: "/invoice/",
-                                        method: "GET"
-                                    })
-                                        .then((res) => { updateInvoiceData(res.data) })
-                                        .catch((err) => (console.log(err)))
+                                    
+                                        axios({
+                                            url: route,
+                                            method: "GET"
+                                        })
+                                            .then((res) => { updateInvoiceData(res.data) })
+                                            .catch((err) => (console.log(err)))
+                                    
+                                    
+                                   
                                 }}
                                 > <KeyboardBackspaceOutlinedIcon /> Back</Button>
 
@@ -372,7 +378,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                     component={TextField}
                                     
                                     label={isSalesRoute ? "Invoice Number":"Bill Number"}
-                                    name="invoice_number"  
+                                    name={isSalesRoute ? "invoice_number": "bill_number"}  
                                     inputProps={{ style: { fontSize: 20 } }}
                                     InputLabelProps={{ style: { fontSize: 20 } }}
                                 />
@@ -397,7 +403,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                     component={TextField}
                                     type="text"
                                     label='Terms'
-                                    name='invoice_terms'
+                                    name={isSalesRoute ? 'invoice_terms' : 'bill_terms'}
                                     className='field'
                                     select
                                     inputProps={{ style: { fontSize: 20 } }}
@@ -416,7 +422,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                             {isSubmitting && <LinearProgress />}
 
                             <div className='form_invoice-box-col2'>
-                             <AddInvoiceTable editRecordData={editRecordData} setFieldValue={setFieldValue} taxType={igst_or_gst} ></AddInvoiceTable>
+                             <AddInvoiceTable editRecordData={editRecordData} setFieldValue={setFieldValue} taxType={igst_or_gst} isSalesRoute={isSalesRoute} ></AddInvoiceTable>
                              {/* <Button
                                     className={['field', 'button'].join('')}
                                     variant="contained"
@@ -446,7 +452,10 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                 inputProps={{ style: { fontSize: 22 } }}
                                 InputLabelProps={{ style: { fontSize: 22 } }}
                             >
-                                {isEditData ? "Update Invoice" : "Add Invoice"}
+                                {isSalesRoute ? 
+                                isEditData ? "Update Invoice" : "Add Invoice" 
+                                : 
+                                isEditData ? "Update Bill": "Add Bill"}
                             </Button>}
 
                             {isEditData && <FormControlLabel
@@ -457,7 +466,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                         color="primary"
                                     />
                                 }
-                                label="Add This As New Invoice"
+                                label= {isSalesRoute ? "Add This As New Invoice" : "Add This As New Bill"}
                             />}
 
                             {addbutton_disabled &&
@@ -475,7 +484,7 @@ const AddInvoiceForm = ({ editRecordData, handleAddInvoiceToggle, updateInvoiceD
                                         inputProps={{ style: { fontSize: 22 } }}
                                         InputLabelProps={{ style: { fontSize: 22 } }}
                                     >
-                                        Add Invocie
+                                        {isSalesRoute ? "Add Invocie" :"Add Bill" }
                             </Button>
                                 </>}
 

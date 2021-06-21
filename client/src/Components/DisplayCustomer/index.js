@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from 'react';
 import {useParams,useHistory} from 'react-router-dom';
-import {fetchcustomer} from '../../Api'
+import {fetchcustomer,fetchvendor} from '../../Api'
 import './DisplayCustomer.scss'
 import Controls from '../controls/Controls';
  
@@ -8,7 +8,7 @@ import axios from 'axios'
 
 
 
-const DisplayCustomer = () => {
+const DisplayCustomer = ({Sales}) => {
     const params = useParams();
     const history = useHistory();
     const [customer, setCustomerData] = useState(null)
@@ -16,7 +16,12 @@ const DisplayCustomer = () => {
 
 
     const fetchAPI = async () => {
-        setCustomerData(await fetchcustomer(params.id));
+        if(Sales){
+            setCustomerData(await fetchcustomer(params.id));
+        }
+        else{
+            setCustomerData(await fetchvendor(params.id))
+        }
         
     }
   
@@ -61,8 +66,8 @@ const DisplayCustomer = () => {
             <div className='box-boxcol'>
 
             <div className='box-col1'>
-                <div className='box-boxcol-row'><p className='box-boxcol-head'>Customer ID :</p><p>{customer._id}</p></div>
-                <div className='box-boxcol-row'><p className='box-boxcol-head'>Customer Type :</p><p>{customer.customer_type}</p></div>
+                {/* <div className='box-boxcol-row'><p className='box-boxcol-head'>Customer ID :</p><p>{customer._id}</p></div> */}
+                {Sales && <div className='box-boxcol-row'><p className='box-boxcol-head'>Customer Type :</p><p>{customer.customer_type}</p></div>}
                 <div className='box-boxcol-row'><p className='box-boxcol-head'>Currency Code :</p><p> {customer.currency}</p></div>
                 <div className='box-boxcol-row'><p className='box-boxcol-head'>Payment Terms:</p><p> {customer.payment_terms}</p></div>
                 <div className='box-boxcol-row'><p className='box-boxcol-head'>GST Treatment:</p><p> {customer.gst_treatment}</p></div>

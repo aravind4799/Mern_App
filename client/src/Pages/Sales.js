@@ -6,7 +6,7 @@ import AddcustomerForm from '../Components/AddcustomerForm'
 import AddInvoiceForm from '../Components/AddInvoiceForm'
 
 import UseTable from '../Components/UseTable';
-import { fetchcustomerdata,fetchinvoicedata } from '../Api';
+import { fetchcustomerdata,fetchinvoicedata,fetchvendordata,fetchbilldata } from '../Api';
 import '../Pages/PageStyle.scss';
 
 
@@ -52,7 +52,13 @@ export const AddCustomer = ({Sales,route}) => {
     const history = useHistory();
 
     const fetchAPI = async () => {
-        setCustomerData(await fetchcustomerdata());
+        if(Sales){
+            setCustomerData(await fetchcustomerdata());
+        }
+        else{
+            setCustomerData(await fetchvendordata());
+        }
+        
         
     }
   
@@ -206,7 +212,7 @@ export const AddCustomer = ({Sales,route}) => {
                                         <Controls.ActionButton color="primary">
                                             <VisibilityIcon fontSize="small"
                                             onClick={()=>{
-                                                let path = `/sales/customer/overview/${item._id}`;
+                                                let path = Sales ? `/sales/customer/overview/${item._id}` :`/purchase/vendor/overview/${item._id}` 
                                                 history.push(path); 
                                             }}
                                             />
@@ -251,8 +257,12 @@ export const AddInvoice = ({Sales,route}) => {
     const history = useHistory();
 
     const fetchAPI = async () => {
-        setInvoiceData(await fetchinvoicedata());
-        
+        if(Sales){
+            setInvoiceData(await fetchinvoicedata());
+        }
+        else{
+            setInvoiceData(await fetchbilldata());
+        }
     }
   
     useEffect(() => {
@@ -336,7 +346,12 @@ export const AddInvoice = ({Sales,route}) => {
 
                 else {
                     // console.log(items.filter(x => x.customer_name.includes('a')))
-                    return items.filter(x => x.customer_name.toLowerCase().includes(target));
+                    if(Sales){
+                        return items.filter(x => x.customer_name.toLowerCase().includes(target));
+                    }
+                    else{
+                        return items.filter(x => x.vendor_name.toLowerCase().includes(target));
+                    }
                 }
 
             }
@@ -385,17 +400,14 @@ export const AddInvoice = ({Sales,route}) => {
                             recordsAfterPagingAndSorting().map((item,index) => (
                                 <>
                                 {console.log(item)}
-                            
-
-                                
-                                
+                        
                                 <TableRow key={index}>
-                                    <TableCell >{item.invoice_date} </TableCell>
-                                    <TableCell>{item.invoice_number}</TableCell>
+                                    <TableCell >{Sales ? item.invoice_date:item.bill_date} </TableCell>
+                                    <TableCell>{Sales ? item.invoice_number:item.bill_number}</TableCell>
                                     <TableCell>{item.order_number}</TableCell>
-                                    <TableCell>{item.customer_details.name}</TableCell>
-                                    <TableCell>{item.invoice_due_date}</TableCell>
-                                    <TableCell>{item.invoice_amount}</TableCell>
+                                    <TableCell>{Sales ? item.customer_details.name : item.vendor_details.name}</TableCell>
+                                    <TableCell>{Sales ?item.invoice_due_date:item.bill_due_date}</TableCell>
+                                    <TableCell>{Sales ? item.invoice_amount:item.bill_amount}</TableCell>
                                     <TableCell>
 
                                         <Controls.ActionButton

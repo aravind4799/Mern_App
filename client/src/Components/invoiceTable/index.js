@@ -21,7 +21,7 @@ import getSeconds from 'date-fns/esm/getSeconds/index';
 //  import { useFormikContext } from 'formik';
 
 
-const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
+const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType,isSalesRoute }) => {
 
   function round_to_2decimal(num) {
     var m = Number((Math.abs(num) * 100).toPrecision(15));
@@ -64,7 +64,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
   const [tax, setTax] = useState('')
   const [tax_preference,setTaxPreference] = useState(editRecordData ? editRecordData.tax_preference : null)
   const[round_off,setRoundoff]=useState(editRecordData ? editRecordData.round_off : 0)
-  const[adjustments,setAdjustments]=useState(editRecordData ? editRecordData.adjustment_title:"Adjustments")
+  const[adjustments,setAdjustments]=useState(editRecordData ? editRecordData.adjustment_title:"")
   const[adjustment_amount,setAdjustmentAmount]=useState(editRecordData ? editRecordData.adjustment_amount :0)
   const [AdjustmentType,setAdjustmentType]=useState(editRecordData ? editRecordData.adjustment_type :'add')
   const [gst,setGst]=useState(editRecordData ? editRecordData.gst : 0)
@@ -163,7 +163,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
 
   setFieldValue('rate_tax_array',rate_tax_array)
   setFieldValue('sub_total', table_data.subTotal)
-  setFieldValue('invoice_amount',FinalTotal)
+  setFieldValue(isSalesRoute ? 'invoice_amount':'bill_amount',FinalTotal)
   setFieldValue('discount_amount', table_data.discountAmount)
   setFieldValue('discount_type', table_data.discountType)
   setFieldValue('shipping_charges', table_data.shippingCharges)
@@ -174,11 +174,7 @@ const AddInvoiceTable = ({ editRecordData, setFieldValue, taxType }) => {
   setFieldValue('adjustment_title',adjustments)
   setFieldValue('tax_preference',tax_preference)
 
- },[tax_preference,table_data.discountType,table_data.discountAmount,rate_tax_array,table_data.shippingCharges,adjustment_amount,AdjustmentType])
-
-
-
-
+ },[tax_preference,table_data.discountType,table_data.discountAmount,rate_tax_array,table_data.shippingCharges,adjustment_amount,AdjustmentType,adjustments])
 
   const columns = [
     { title: "ID", field: "id", editable: false },

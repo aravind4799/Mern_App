@@ -35,7 +35,11 @@ function App() {
          /> 
         </Route>
           
-        <Route path='/sales/customer/overview/:id' exact component={DisplayCustomer}/>
+        <Route path='/sales/customer/overview/:id' exact>
+          <DisplayCustomer
+          Sales={true}
+          />
+        </Route>  
 
 
 
@@ -43,13 +47,18 @@ function App() {
           <AddCustomer
           Sales={false}
           route='/vendors/'
-          
           />
         </Route>
         <Route path='/purchase/addbill' exact>
           <AddInvoice
           Sales={false}
-          route='/bill/'
+          route='/bills/'
+          />
+        </Route>
+
+        <Route path='/purchase/vendor/overview/:id' exact>
+          <DisplayCustomer
+          Sales={false}
           />
         </Route>
 

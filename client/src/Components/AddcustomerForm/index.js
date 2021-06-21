@@ -172,7 +172,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                 .catch((err) => (console.log(err)))
                             setNotify({
                                 isOpen: true,
-                                message: "Customer Added Successfully",
+                                message: isSalesRoute ? "Customer Added Successfully":"Vendor added Successfully",
                                 type: 'success'
                             })
                         }
@@ -189,7 +189,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                 .catch((err) => (console.log(err)))
                             setNotify({
                                 isOpen: true,
-                                message: "Customer Data Updated Successfully",
+                                message: isSalesRoute ? "Customer Data Updated Successfully":"Vendor Data Updated Successfully",
                                 type: 'success'
                             })
                         }
@@ -211,7 +211,7 @@ const AddcustomerForm = ({ editRecordData, handleAddCustomerToggle, updateCustom
                                     onClick={() => {
                                         handleAddCustomerToggle((prev_value) => (!prev_value))
                                         axios({
-                                            url: "/customers/",
+                                            url: route,
                                             method: "GET"
                                         })
                                             .then((res) => { updateCustomerData(res.data) })
