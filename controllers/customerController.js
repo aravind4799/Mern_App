@@ -21,7 +21,7 @@ module.exports = {
   addCustomer: async (req, res) => {
     console.log(req.body);
     const newcustomer = new Customer(req.body);
-    
+
     try {
       const newCustomer = await newcustomer.save();
       res.status(201).json(newCustomer);
@@ -55,12 +55,12 @@ module.exports = {
       const updateObject = req.body; // {last_name : "smith", age: 44}
       const id = req.params.id;
       const updatedCustomer = await Customer.updateOne(
-          {_id: ObjectId(id)},
-          {$set: updateObject},
+        { _id: ObjectId(id) },
+        { $set: updateObject },
       );
       res.status(201).json(updatedCustomer);
     } catch (err) {
-      res.status(400).json({message: err.message});
+      res.status(400).json({ message: err.message });
     }
   },
 

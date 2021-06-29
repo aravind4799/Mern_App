@@ -54,12 +54,12 @@ module.exports = {
       const updateObject = req.body; // {last_name : "smith", age: 44}
       const id = req.params.id;
       const updatedItem = await Item.updateOne(
-          {_id: ObjectId(id)},
-          {$set: updateObject},
+        { _id: ObjectId(id) },
+        { $set: updateObject },
       );
       res.status(201).json(updatedItem);
     } catch (err) {
-      res.status(400).json({message: err.message});
+      res.status(400).json({ message: err.message });
     }
   },
 

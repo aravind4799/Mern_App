@@ -6,7 +6,7 @@ const invoiceController = require("../controllers/invoiceController");
 
 
 // Getting invoice as pdf
-router.get('/pdf', invoiceController.getPdfInvoice);
+router.post('/pdf', invoiceController.getPdfInvoice);
 
 // Getting all invoice
 router.get('/', invoiceController.getAllInvoices);
